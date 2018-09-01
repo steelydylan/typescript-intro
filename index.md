@@ -77,6 +77,32 @@ JavaScriptの文法に型を追加したJavaScriptのスーパーセット
 
 ## 3. 文法
 
+違うtypeの値を代入できない
+
+```js
+let str: string = 'godai';
+str = 3; //error!
+```
+
+---
+
+## 3. 文法
+
+inteface
+
+```js
+interface Human {
+  age: number,
+  name: string
+}
+
+const hoge: Human = {
+  gender: 'man' //error genderは定義されていない
+}
+```
+
+
+
 
 
 

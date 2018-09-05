@@ -197,13 +197,12 @@ module.exports = {
 
 
 ```sh
-npm install --save-dev typescript@3.0.1
-npm install --save-dev @babel/core@7.0.0
-npm install --save-dev @babel/cli@7.0.0
-npm install --save-dev @babel/plugin-proposal-class-properties@7.0.0
-npm install --save-dev @babel/plugin-proposal-object-rest-spread@7.0.0
-npm install --save-dev @babel/preset-env@7.0.0
-npm install --save-dev @babel/preset-typescript@7.0.0
+npm install --save-dev typescript
+npm install --save-dev @babel/core
+npm install --save-dev @babel/cli
+npm install --save-dev @babel/preset-stage-3
+npm install --save-dev @babel/preset-env
+npm install --save-dev @babel/preset-typescript
 ```
 
 ---
@@ -227,14 +226,16 @@ tsc
 
 ```json
 {
-    "presets": [
-        "@babel/env",
-        "@babel/typescript"
-    ],
-    "plugins": [
-        "@babel/proposal-class-properties",
-        "@babel/proposal-object-rest-spread"
-    ]
+  "presets": [
+    ["@babel/env", {
+      "targets": {
+        "browsers": ["last 2 versions"]
+      }
+    }],
+    "@babel/stage-3",
+    "@babel/react",
+    "@babel/typescript"
+  ]
 }
 ```
 
@@ -267,7 +268,92 @@ module.exports = {
 
 ## 5. 最新のTypeScript事情
 
+3.0の最新機能
 
+
+rest paramsの型定義
+
+```ts
+function foo(...args: [number, string, boolean]): void;
+```
+
+JSXでのdefaultProps対応
+```js
+export interface Props {
+    name: string;
+}
+
+export class Greet extends React.Component<Props> {
+    render() {
+        const { name } = this.props;
+        return <div>Hello ${name.toUpperCase()}!</div>;
+    }
+    static defaultProps = { name: "world"};
+}
+```
+
+---
+## 5. 最新のTypeScript事情
+
+もっと気軽にTypeScriptを導入しよう！
+
+1. すべての変数に型をつける必要はない。（型推論機能もある！）
+2. npm経由で型情報もインストールできる
+3. Reactともすごく相性がいい
+
+---
+
+## 6. ライブラリとして配布する際のコツ
+
+TypeScriptのプロジェクトをnpmとして配布するときには`package.json`に定義ファイルへのパスを記述する。`types`
+
+```json
+{
+  "name": "redux-action-handler",
+  "version": "0.0.3",
+  "description": "handle actions without using switch statements",
+  "main": "./lib/index.js",
+  "types": "./index.d.ts",
+  ...
+```
+
+---
+## 6. ライブラリとして配布する際のコツ
+
+
+index.d.tsの設置
+
+```ts
+declare module 'redux-action-handler' {
+  interface Payload {
+    [x: string]: any 
+  }
+  interface Action<State> {
+    type: string;
+    reducer: Reducer<State>;
+  }
+  type Reducer<State> = (state: State, payload: Payload) => State;
+  export default class ActionHandler<State> {
+    private initialState;
+    private actions;
+    constructor(initialState: State);
+    addCase(type: string, reducer: Reducer<State>): void;
+    create(): (state: State, action: Action<State>) => State;
+  }
+}
+```
+
+---
+
+## 6. ライブラリとして配布する際のコツ
+
+サンプル
+
+[https://github.com/steelydylan/redux-action-handler](https://github.com/steelydylan/redux-action-handler)
+
+---
+
+ありがとうございました！
 
 
 
